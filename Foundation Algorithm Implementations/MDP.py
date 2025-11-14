@@ -24,6 +24,11 @@ class Policy:
     def update_policy(self, state, actions):
         self.action_mapper[state] = actions
 
+    @staticmethod
+    def random_policy(action_space, state_space):
+        action_mapper = {i:  action_space for i in state_space}
+        return Policy(action_mapper)
+
 class MDP:
     def __init__(self,
                  environment,

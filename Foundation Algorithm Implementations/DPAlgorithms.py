@@ -1,5 +1,5 @@
 from helper import DPHelper
-from MDP import Policy, MDP
+from MDP import Policy, MDP, Action
 import numpy as np
 
 class DPAlgorithms():
@@ -61,13 +61,44 @@ class DPAlgorithms():
         return policy
 
     def policy_iteration(self, policy: Policy, max_iter = 100):
-        pre_reward_matrix = np.zeros((DPHelper.grid_size, DPHelper.grid_size))
+        reward_matrix = np.zeros((DPHelper.grid_size, DPHelper.grid_size))
         for iter in range(max_iter):
-            current_reward_matrix = self.evaluate_policy(policy, pre_reward_matrix)
-            policy = self.improve_policy(policy=policy,reward_matrix=current_reward_matrix)
-            pre_reward_matrix = current_reward_matrix
+            reward_matrix = self.evaluate_policy(policy, reward_matrix)
+            policy = self.improve_policy(policy=policy,reward_matrix=reward_matrix)
             print(f"Iteration {iter}")
             print(policy.get_current_policy())
-            print(pre_reward_matrix)
+            print(reward_matrix)
 
-        return policy, pre_reward_matrix
+        return policy, reward_matrix
+    
+    def update_reward_greedily(self, reward_matrix):
+        current_matrix = np.zeros((DPHelper.grid_size, DPHelper.grid_size))
+        action_mapper = {}
+        for state in self.mdp.get_possible_states():
+            best_reward = float("inf") * -1.0
+            best_actions = [Action.DOWN]
+            for action in self.mdp.get_action_space():
+                next_s, reward, _ = self.mdp.observe(state, action)
+                x, y = DPHelper.to_matrix_index(next_s)
+                total_reward = reward + reward_matrix[x][y]
+                if total_reward > best_reward:
+                    best_reward = total_reward
+                    best_actions = [action]
+                elif total_reward == best_reward:
+                    best_actions.append(action)
+
+            cur_x, cur_y = DPHelper.to_matrix_index(state)
+            current_matrix[cur_x][cur_y] = best_reward
+            action_mapper[state] = best_actions
+        return Policy(action_mapper=action_mapper), current_matrix
+
+    def value_iteration(self, max_iter = 100):
+        policy = None
+        reward_matrix = np.zeros((DPHelper.grid_size, DPHelper.grid_size))
+        for iter in range(max_iter):
+            policy, reward_matrix = self.update_reward_greedily(reward_matrix)
+            print(f"Iteration {iter}")
+            print(reward_matrix)
+            print(f"Policy")
+            print(policy.action_mapper)
+        return policy, reward_matrix
