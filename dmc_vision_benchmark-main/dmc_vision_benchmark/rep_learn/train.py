@@ -148,7 +148,11 @@ class Trainer:
       env_eval_seed_tuples = [
           (x, 0) for x in range(int(1e6), int(1e6) + num_online_runs)
       ]
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> 1b85008 (add result)
     # Build the online evaluator
     self.online_env = eval_in_envs.EvalInEnv(
         env=env,
@@ -674,7 +678,11 @@ class Trainer:
     bc_loss = 0
     avg_abs_critic1 = 0
 
+<<<<<<< HEAD
     # Initialize model params, optimizer, and optimizer state
+=======
+    print("Initialize model params, optimizer, and optimizer state")
+>>>>>>> 1b85008 (add result)
     if "td3" not in self.config.model:
       future_obs = (
           init_data[self.future_obs_type]
@@ -683,6 +691,11 @@ class Trainer:
       )
       idm_step = init_data["idm_step"] if "idm_step" in init_data else None
       actions = init_data["actions"] if "actions" in init_data else None
+<<<<<<< HEAD
+=======
+
+      print("initialize model")
+>>>>>>> 1b85008 (add result)
       model_params = self.model.init(
           jax.random.PRNGKey(0),
           obs=init_data[self.obs_type],
@@ -690,7 +703,11 @@ class Trainer:
           idm_step=idm_step,
           actions=actions,
       )
+<<<<<<< HEAD
       # Initialize the optimizer
+=======
+      print("Initialize the optimizer")
+>>>>>>> 1b85008 (add result)
       self.opt = optax.adam(learning_rate=self.config.learning.learning_rate)
       opt_state = self.opt.init(model_params)
     else:
@@ -699,7 +716,11 @@ class Trainer:
           obs=init_data[self.obs_type],
           method="initialize",
       )
+<<<<<<< HEAD
       # Create critic optimizer
+=======
+      print("# Create critic optimizer")
+>>>>>>> 1b85008 (add result)
       self.opt_critic = optax.adam(
           learning_rate=self.config.learning.learning_rate
       )
@@ -710,6 +731,10 @@ class Trainer:
       )
       self.opt_actor_keys = ["actor"]
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1b85008 (add result)
       # Whether we update the encoder with the actor or the critic loss
       encoder_keys = [
           "critic_encoder_trunk",
@@ -738,7 +763,11 @@ class Trainer:
       # Copy the parameters to initialize the teacher network
       teacher_params = jax.tree_util.tree_map(lambda x: x + 0, model_params)
 
+<<<<<<< HEAD
     # Create checkpoint manager
+=======
+    print("Create checkpoint manager")
+>>>>>>> 1b85008 (add result)
     checkpoint_manager = orbax.checkpoint.CheckpointManager(
         directory=self.checkpoint_workdir,
         checkpointers=orbax.checkpoint.PyTreeCheckpointer(),
@@ -750,7 +779,11 @@ class Trainer:
     # Add metrics
     metrics = {"train_loss": {}, "eval_loss": {}, "online_eval": {}}
 
+<<<<<<< HEAD
     # Option 1: Initialize the obs encoder from a pretrained model
+=======
+    print("Option 1: Initialize the obs encoder from a pretrained model")
+>>>>>>> 1b85008 (add result)
     if "frozen_encoder" in self.config.model:
       print(
           "\nLoading observation encoder from pretrained model",
@@ -879,7 +912,12 @@ class Trainer:
               "reward_mean": reward_mean,
               "reward_se": reward_se,
           }
+<<<<<<< HEAD
 
+=======
+          metric = metrics["online_eval"][it]
+          print(f"\nReward {metric} at step {it}")
+>>>>>>> 1b85008 (add result)
       # Save checkpoint
       if it % self.config.learning.checkpoint_every == 0:
         print(f"\nSaving checkpoint at step {it}")

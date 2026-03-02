@@ -21,10 +21,17 @@ hardware.
 """
 
 import copy
+import sys
+import os
+sys.path.append(os.getcwd()) 
 
 from absl import app
 from dmc_vision_benchmark.rep_learn import config
 from dmc_vision_benchmark.rep_learn import train
+import jax
+import tensorflow as tf
+
+tf.config.experimental.set_visible_devices([], "GPU")
 
 PAPER_NAMES = {
     "bc": "NULL + BC",
@@ -45,11 +52,9 @@ def run_benchmark1(_):
   # For simplicity, we only consider one task, one distractor, and one policy.
   this_config.data.domain_name = "cheetah"
   this_config.data.task_name = "run"
-  this_config.data.policy_level = "expert"
-  this_config.data.difficulty = "none"
+  this_config.data.difficulty = "medium"
   this_config.data.dynamic_distractors = True
 
-  # # To reproduce Benchmark 1 for locomotion taks,
   # # we need to loop over tasks, distractors and policies.
   # for domain_name, task_name in [
   #     ("walker", "walk"),
@@ -88,20 +93,20 @@ def run_benchmark1(_):
   #     this_config.online_eval.max_episode_length = 1_000
 
   # One training step, one eval step
-  this_config.online_eval.num_online_runs = 1  # set to 30 in paper
-  this_config.learning.num_iters = 1  # set to 400_000 in paper
-  this_config.learning.checkpoint_interval = 1  # set to 20_000 in paper
-  this_config.learning.online_eval_every = 1  # set to 20_000 in paper
-  this_config.learning.eval_every = 10  # skip. set to 20_000 in paper
-  this_config.try_to_restore = False  # set to True
+  this_config.online_eval.num_online_runs = 30  # set to 30 in paper
+  this_config.learning.num_iters = 400_000  # set to 400_000 in paper
+  this_config.learning.checkpoint_interval = 20_000  # set to 20_000 in paper
+  this_config.learning.online_eval_every = 20_000  # set to 20_000 in paper
+  this_config.learning.eval_every = 20_000  # skip. set to 20_000 in paper
+  this_config.try_to_restore = True  # set to True
 
   # NULL + {BC, BC (state), TD3-BC}
-  for model in ["bc", "bc_on_state", "td3_bc"]:
+  for model in ["td3_bc"]:#"bc", "bc_on_state", 
     print(f"\n\n####### {PAPER_NAMES[model]} #######\n")
     this_config.model = model
     trainer = train.Trainer(copy.deepcopy(this_config))
     _, metrics = trainer.train()
-    print("Reward", metrics["online_eval"][0])
+    print("Reward", metrics["online_eval"])
 
   # {ID, LFD, AE} + BC
   for pretraining in [
@@ -123,8 +128,9 @@ def run_benchmark1(_):
     this_config.pretrained_model_id = trainer.this_id
     trainer = train.Trainer(copy.deepcopy(this_config))
     _, metrics = trainer.train()
-    print("Reward", metrics["online_eval"][0])
+    print("Reward", metrics["online_eval"])
 
 
 if __name__ == "__main__":
+  jax.print_environment_info()
   app.run(run_benchmark1)

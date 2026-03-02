@@ -1,3 +1,4 @@
+## This code does work for dynamic visual distractors
 unset DISPLAY
 export MUJOCO_GL=egl
 export PYOPENGL_PLATFORM=egl
@@ -48,3 +49,11 @@ Xvfb :1 -ac -screen 0 ${SIZEW}x${SIZEH}x${DEPTH} -dpi ${DPI} \
 until [[ -S /tmp/.X11-unix/X1 ]]; do sleep 1; done
 
 xdpyinfo >/dev/null && echo "Xvfb is running"
+
+
+
+# Install library
+# pip install "jax[cuda12]==0.4.28" "jaxlib==0.4.28" "nvidia-cuda-nvcc-cu12<12.5"
+# pip install -e ./
+# bash install_distracting_control.sh
+

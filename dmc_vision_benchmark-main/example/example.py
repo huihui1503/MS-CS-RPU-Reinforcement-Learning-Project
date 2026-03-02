@@ -13,6 +13,9 @@
 # limitations under the License.
 
 """Example script."""
+import sys
+import os
+sys.path.append(os.getcwd()) 
 
 from absl import app
 from dmc_vision_benchmark.rep_learn import config
@@ -36,7 +39,7 @@ def train_bc_one_step(_):
   this_config.data.domain_name = "walker"
   this_config.data.task_name = "walk"
   this_config.data.policy_level = "expert"
-  this_config.data.difficulty = "medium"
+  this_config.data.difficulty = "none"
   this_config.data.dynamic_distractors = False
   this_config.data.dataset_dir = "/scratch/cor54gyp/dmc_vision_bench_data/dmc_vision_benchmark/"
 

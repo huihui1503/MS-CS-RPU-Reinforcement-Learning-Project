@@ -158,7 +158,11 @@ class EnvRunner:
     # Run the policy in the environment
     step_counter = 0
     is_done = timestep.last()
+<<<<<<< HEAD
     with tqdm.tqdm(total=self.max_steps, desc='EnvRunner') as pbar:
+=======
+    with tqdm.tqdm(total=self.max_steps, desc='EnvRunner', mininterval=0.5, dynamic_ncols=True) as pbar:
+>>>>>>> 1b85008 (add result)
       while not is_done:
         # Plan a chunk of actions given history
         preds = plan_actions(
@@ -186,10 +190,22 @@ class EnvRunner:
               _deque_append, observation_history, timestep.observation
           )
           action_history = jax.tree.map(_deque_append, action_history, action)
+<<<<<<< HEAD
           # Check to see if episode is done
           step_counter += 1
           pbar.update(1)
           pbar.set_postfix(reward=timestep.reward)
+=======
+          
+          # Update counter
+          step_counter += 1
+
+          # Update logging
+          pbar.update(1)
+          pbar.set_postfix(reward=timestep.reward, step_counter=step_counter)
+
+          # Check to see if episode is done
+>>>>>>> 1b85008 (add result)
           if timestep.last() or (
               self.max_steps is not None and step_counter >= self.max_steps
           ):
@@ -275,7 +291,12 @@ class EvalInEnv:
       env_eval_seed_tuples = self.env_eval_seed_tuples
 
     save_video = save_video if save_video else self.save_video
+<<<<<<< HEAD
     for _, (env_seed, eval_seed) in enumerate(env_eval_seed_tuples):
+=======
+    for i, (env_seed, eval_seed) in enumerate(env_eval_seed_tuples): # a list of 30 items - 30 trajectories
+      print(f"Starting online evaluation trajectory {i}.")
+>>>>>>> 1b85008 (add result)
       with jax.spmd_mode('allow_all'), jax.transfer_guard('allow'):
         # Run the evaluation for a pair of environment and evaluation seed, and
         # aggregate all relevant info into kd_context.
