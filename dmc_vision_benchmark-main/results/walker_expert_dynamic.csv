@@ -1,4 +1,4 @@
-step,reward_mean,reward_se
+step,reward_mean,reward_se,model
 0,21.96702838,2.13238646,null+td3_bc
 20000,642.08285441,30.60995068,null+td3_bc
 40000,641.91521359,46.21021639,null+td3_bc
